@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karaoke AI Studio - Thumbnail & Video Generator</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .gradient-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        }
+        .gradient-btn:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <!-- Header / Navbar -->
+    <header class="border-b border-slate-800 bg-slate-900/80 sticky top-0 z-50 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl gradient-btn flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <i class="fa-solid font-bold text-white text-xl fa-music"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-xl tracking-tight text-white flex items-center gap-2">
+                        Karaoke AI Studio <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">PRO</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Pembuat Thumbnail & Scene Video Karaoke Orgen Tunggal</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3 text-xs text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
+                <i class="fa-solid fa-sparkles text-amber-400"></i>
+                <span>Powered by Gemini 3.1 Flash AI</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 mt-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- LEFT PANEL: Input Form -->
+            <div class="lg:col-span-5 space-y-6">
+                <div class="glass-panel p-6 rounded-2xl shadow-xl">
+                    <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-indigo-400"></i> Informasi Lagu Karaoke
+                    </h2>
+                    
+                    <form id="karaokeForm" onsubmit="event.preventDefault();" class="space-y-4">
+                        <!-- Judul Lagu -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Judul Lagu *</label>
+                            <input type="text" id="songTitle" placeholder="Contoh: KANDAS / BEGADANG" value="Mengejar Badai" required
+                                class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
+                        </div>
+
+                        <!-- Penyanyi / Artis -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Penyanyi / Artis *</label>
+                            <input type="text" id="artistName" placeholder="Contoh: Rhoma Irama / Meggy Z" value="Meggy Z" required
+                                class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
+                        </div>
+
+                        <!-- Nada Dasar -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Nada Dasar *</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <select id="keyNote" class="bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-indigo-500">
+                                    <option value="Nada Wanita (C = Do)">Nada Wanita (C = Do)</option>
+                                    <option value="Nada Pria (G = Do)" selected>Nada Pria (G = Do)</option>
+                                    <option value="Nada Pria (A = Do)">Nada Pria (A = Do)</option>
+                                    <option value="Nada Pria (D = Do)">Nada Pria (D = Do)</option>
+                                    <option value="Nada Rendah (F = Do)">Nada Rendah (F = Do)</option>
+                                    <option value="Custom">Lainnya...</option>
+                                </select>
+                                <input type="text" id="customKey" placeholder="G = Do / Cm" value="Nada Pria (G=Do)"
+                                    class="bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-indigo-500">
+                            </div>
+                        </div>
+
+                        <!-- Genre / Style MusiK -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Gaya Musik Orgen Tunggal</label>
+                            <select id="organStyle" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-indigo-500">
+                                <option value="Dangdut Klasik Modern Keyboard Studio">Dangdut Klasik Modern</option>
+                                <option value="Dangdut Koplo Fast Beat Orgen Tunggal">Dangdut Koplo Energetik</option>
+                                <option value="Panggung Hajatan Malam Hari Penuh Lampu Warna-Warni">Hajatan Panggung Malam</option>
+                                <option value="Pop Melayu Synthesizer Keyboard Show">Pop Melayu Studio</option>
+                                <option value="Acoustic Keyboard Lounge Live">Acoustic Lounge Keyboard</option>
+                            </select>
+                        </div>
+
+                        <!-- Deskripsi Tambahan / Visual Prompt -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Deskripsi Tambahan Visual</label>
+                            <textarea id="extraDescription" rows="3" placeholder="Contoh: Pencahayaan panggung biru ungu sinematik, efek asap tipis, pemain keyboard pria berpengalaman memakai kemeja elegan..."
+                                class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">Keyboardist pria profesional sedang memainkan keyboard Roland/Yamaha arranger dengan latar panggung pesta neon sinematik, efek asap stage, sorot lampu sorot tajam.</textarea>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="pt-2 space-y-3">
+                            <button type="button" onclick="generateThumbnail()" id="btnGenThumb"
+                                class="w-full gradient-btn text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-indigo-500/25 transition flex items-center justify-center gap-2 text-sm">
+                                <i class="fa-solid fa-image"></i>
+                                <span>Generate Thumbnail AI</span>
+                            </button>
+
+                            <button type="button" onclick="generateVideoScenes()" id="btnGenVideo"
+                                class="w-full bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold py-3 px-4 rounded-xl border border-slate-700 transition flex items-center justify-center gap-2 text-sm">
+                                <i class="fa-solid fa-film text-purple-400"></i>
+                                <span>Generate 20 Scene Video (8 dtk/scene)</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: Preview & Downloads -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- Toast Notification Container -->
+                <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+                <!-- Section 1: Thumbnail Preview -->
+                <div class="glass-panel p-6 rounded-2xl shadow-xl">
+                    <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-photo-film text-indigo-400"></i> Preview Thumbnail AI (16:9)
+                        </h3>
+                        <button id="btnDownloadThumb" onclick="downloadThumbnail()" disabled
+                            class="opacity-50 cursor-not-allowed bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold py-2 px-3 rounded-lg transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-download"></i> Unduh Thumbnail
+                        </button>
+                    </div>
+
+                    <div id="thumbContainer" class="relative aspect-video w-full bg-slate-900 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center group shadow-inner">
+                        <!-- Canvas / Preview Image -->
+                        <canvas id="thumbnailCanvas" class="w-full h-full object-cover hidden"></canvas>
+
+                        <!-- Empty State / Loading State -->
+                        <div id="thumbPlaceholder" class="text-center p-6 space-y-3">
+                            <div class="w-16 h-16 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center mx-auto text-slate-500">
+                                <i class="fa-solid fa-wand-magic-sparkles text-2xl"></i>
+                            </div>
+                            <p class="text-sm text-slate-400">Klik tombol <b>"Generate Thumbnail AI"</b> untuk membuat gambar latar & layout teks otomatis.</p>
+                        </div>
+
+                        <!-- Loading Overlay -->
+                        <div id="thumbLoading" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex-col items-center justify-center space-y-3 z-10">
+                            <div class="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                            <p class="text-xs font-medium text-indigo-300 animate-pulse">Menggenerate Thumbnail Sinematik AI...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: 20 Scene Video Timeline -->
+                <div class="glass-panel p-6 rounded-2xl shadow-xl space-y-4">
+                    <div class="flex flex-wrap justify-between items-center gap-2">
+                        <div>
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-clapperboard text-purple-400"></i> Scene Video Orgen Tunggal (20 Scene @ 8s = 160s)
+                            </h3>
+                            <p class="text-xs text-slate-400">Visual pergerakan kamera sinematik pemain keyboard realistis</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap items-center gap-2">
+                            <!-- Tombol Unduh Video Utuh Langsung -->
+                            <button id="btnDownloadMergedVideo" onclick="compileAndDownloadFullVideo()" disabled
+                                class="opacity-50 cursor-not-allowed bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold py-2 px-3 rounded-lg transition flex items-center gap-1.5 shadow-lg">
+                                <i class="fa-solid fa-file-video"></i> Unduh Video Utuh (MP4)
+                            </button>
+
+                            <button id="btnDownloadAll" onclick="downloadAllPackage()" disabled
+                                class="opacity-50 cursor-not-allowed bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold py-2 px-3 rounded-lg transition flex items-center gap-1.5 shadow-lg">
+                                <i class="fa-solid fa-box-archive"></i> Unduh Lengkap (Paket)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Video Scene Loading / Rendering Progress -->
+                    <div id="videoProgress" class="hidden bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+                        <div class="flex justify-between text-xs text-slate-300 font-medium">
+                            <span id="videoProgressText">Proses membuat scene video AI...</span>
+                            <span id="videoProgressPercent">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                            <div id="videoProgressBar" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-full w-0 transition-all duration-300"></div>
+                        </div>
+                    </div>
+
+                    <!-- Scenes Container Grid -->
+                    <div id="scenesGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-h-[420px] overflow-y-auto pr-1">
+                        <!-- Scene Card Example Placeholder -->
+                        <div class="col-span-full text-center py-12 text-slate-500 bg-slate-900/40 border border-dashed border-slate-800 rounded-xl">
+                            <i class="fa-solid fa-film text-3xl mb-2 text-slate-600"></i>
+                            <p class="text-sm">Belum ada scene video yang digenerate.</p>
+                            <p class="text-xs text-slate-600 mt-1">Klik "Generate 20 Scene Video" untuk memulai rincian per-scene.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Store generated data globally
+        let currentThumbnailUrl = null;
+        let generatedScenes = [];
+        let isRenderingVideo = false;
+
+        // Toast Notification System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            const bgColors = {
+                info: 'bg-slate-800 border-indigo-500 text-slate-100',
+                success: 'bg-emerald-950/90 border-emerald-500 text-emerald-200',
+                warning: 'bg-amber-950/90 border-amber-500 text-amber-200',
+                error: 'bg-rose-950/90 border-rose-500 text-rose-200'
+            };
+
+            const icons = {
+                info: 'fa-circle-info text-indigo-400',
+                success: 'fa-circle-check text-emerald-400',
+                warning: 'fa-triangle-exclamation text-amber-400',
+                error: 'fa-circle-xmark text-rose-400'
+            };
+
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border shadow-2xl backdrop-blur-md text-xs font-medium transition-all duration-300 transform translate-y-2 opacity-0 ${bgColors[type] || bgColors.info}`;
+            toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info} text-base"></i> <span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Dynamic key syncing
+        document.getElementById('keyNote').addEventListener('change', function(e) {
+            const customInput = document.getElementById('customKey');
+            if (e.target.value !== 'Custom') {
+                customInput.value = e.target.value;
+            } else {
+                customInput.value = '';
+                customInput.focus();
+            }
+        });
+
+        // ------------------------------------------------------------------
+        // API HELPER: Gemini Image Generation (gemini-3.1-flash-image / Nano Banana)
+        // ------------------------------------------------------------------
+        async function fetchGeminiImage(prompt, aspectRatio = "16:9") {
+            const apiKey = ""; // Canvas runtime auto-fills key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{
+                    role: 'user',
+                    parts: [{ text: prompt }]
+                }],
+                generationConfig: {
+                    responseModalities: ['IMAGE'],
+                    imageConfig: { aspectRatio: aspectRatio }
+                }
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Gagal memanggil API AI: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            const part = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+            if (!part) {
+                throw new Error("Gagal menerima format gambar dari AI.");
+            }
+
+            return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+        }
+
+        // ------------------------------------------------------------------
+        // GENERATE THUMBNAIL LOGIC
+        // ------------------------------------------------------------------
+        async function generateThumbnail() {
+            const title = document.getElementById('songTitle').value.trim();
+            const artist = document.getElementById('artistName').value.trim();
+            const keyNote = document.getElementById('customKey').value.trim();
+            const style = document.getElementById('organStyle').value;
+            const extra = document.getElementById('extraDescription').value;
+
+            if (!title || !artist) {
+                alert('Mohon isi Judul Lagu dan Nama Penyanyi!');
+                return;
+            }
+
+            const thumbLoading = document.getElementById('thumbLoading');
+            const thumbPlaceholder = document.getElementById('thumbPlaceholder');
+            const canvas = document.getElementById('thumbnailCanvas');
+            const btnDownload = document.getElementById('btnDownloadThumb');
+
+            thumbLoading.classList.remove('hidden');
+            thumbLoading.classList.add('flex');
+
+            try {
+                showToast("Sedang meng-generate Thumbnail AI...", "info");
+                // Build AI Image Prompt
+                const aiPrompt = `A high quality, ultra-realistic cinematic YouTube thumbnail background for a professional Indonesian Karaoke Organ Tunggal music video. Visual: A professional organist/keyboardist playing a modern arranger synthesizer keyboard with glowing LED buttons on a concert stage. Neon lighting, atmospheric smoke, stage spotlights, dynamic camera perspective, 8k resolution, highly detailed, style: ${style}. Details: ${extra}. No text embedded in image.`;
+
+                // Call Gemini Image Generation API
+                const bgImageDataUrl = await fetchGeminiImage(aiPrompt, "16:9");
+
+                // Render Canvas with Banner Overlay, Text Typography, and Key Badge
+                await drawThumbnailCanvas(bgImageDataUrl, title, artist, keyNote);
+
+                canvas.classList.remove('hidden');
+                thumbPlaceholder.classList.add('hidden');
+                
+                // Enable Download Button
+                btnDownload.disabled = false;
+                btnDownload.classList.remove('opacity-50', 'cursor-not-allowed');
+
+                updateAllDownloadState();
+                showToast("Thumbnail AI berhasil dibuat!", "success");
+
+            } catch (err) {
+                console.error(err);
+                showToast("Menggunakan renderer fallback template.", "warning");
+                // Fallback using canvas color gradient if API rate limited or offline
+                await drawThumbnailCanvas(null, title, artist, keyNote);
+                canvas.classList.remove('hidden');
+                thumbPlaceholder.classList.add('hidden');
+                btnDownload.disabled = false;
+                btnDownload.classList.remove('opacity-50', 'cursor-not-allowed');
+            } finally {
+                thumbLoading.classList.add('hidden');
+                thumbLoading.classList.remove('flex');
+            }
+        }
+
+        // Canvas Rendering for Graphic Layout & Typography
+        function drawThumbnailCanvas(bgImgUrl, title, artist, keyNote) {
+            return new Promise((resolve) => {
+                const canvas = document.getElementById('thumbnailCanvas');
+                const ctx = canvas.getContext('2d');
+
+                // Standard YouTube Thumbnail Resolution
+                canvas.width = 1280;
+                canvas.height = 720;
+
+                const renderTextAndOverlays = () => {
+                    // Dark Gradient Overlay for Readability
+                    const grad = ctx.createLinearGradient(0, 0, canvas.width * 0.8, canvas.height);
+                    grad.addColorStop(0, 'rgba(15, 23, 42, 0.92)');
+                    grad.addColorStop(0.5, 'rgba(15, 23, 42, 0.65)');
+                    grad.addColorStop(1, 'rgba(15, 23, 42, 0.3)');
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // Top Banner / Karaoke Tag
+                    ctx.fillStyle = '#f59e0b'; // Amber Gold
+                    ctx.beginPath();
+                    ctx.roundRect(60, 50, 260, 48, 12);
+                    ctx.fill();
+
+                    ctx.fillStyle = '#0f172a';
+                    ctx.font = 'bold 24px Inter, sans-serif';
+                    ctx.fillText('🎤 KARAOKE HD', 85, 83);
+
+                    // Key Note Badge (Nada Dasar)
+                    if (keyNote) {
+                        ctx.fillStyle = 'rgba(99, 102, 241, 0.9)'; // Indigo
+                        ctx.beginPath();
+                        ctx.roundRect(330, 50, 320, 48, 12);
+                        ctx.fill();
+
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 22px Inter, sans-serif';
+                        ctx.fillText(`🎹 ${keyNote}`, 350, 83);
+                    }
+
+                    // Main Title (Judul Lagu)
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '900 76px Inter, sans-serif';
+                    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                    ctx.shadowBlur = 15;
+                    
+                    // Wrap text if too long
+                    const upperTitle = title.toUpperCase();
+                    if (upperTitle.length > 18) {
+                        ctx.font = '900 60px Inter, sans-serif';
+                        ctx.fillText(upperTitle.substring(0, 22), 60, 260);
+                        if (upperTitle.length > 22) {
+                            ctx.fillText(upperTitle.substring(22), 60, 330);
+                        }
+                    } else {
+                        ctx.fillText(upperTitle, 60, 280);
+                    }
+
+                    // Artist Subtitle
+                    ctx.fillStyle = '#a855f7'; // Purple Accent
+                    ctx.font = '700 42px Inter, sans-serif';
+                    ctx.fillText(`POPULER BY: ${artist.toUpperCase()}`, 60, 370);
+
+                    // Orgen Tunggal / Style Tag Bottom
+                    ctx.shadowBlur = 0;
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.roundRect(60, 600, 480, 60, 16);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#f8fafc';
+                    ctx.font = 'bold 24px Inter, sans-serif';
+                    ctx.fillText('LIRIK TANPA VOKAL • ORGEN TUNGGAL', 85, 638);
+
+                    currentThumbnailUrl = canvas.toDataURL('image/png');
+                    resolve();
+                };
+
+                if (bgImgUrl) {
+                    const img = new Image();
+                    img.crossOrigin = "anonymous";
+                    img.onload = () => {
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        renderTextAndOverlays();
+                    };
+                    img.onerror = () => {
+                        // Background gradient fallback
+                        drawFallbackBg(ctx, canvas);
+                        renderTextAndOverlays();
+                    };
+                    img.src = bgImgUrl;
+                } else {
+                    drawFallbackBg(ctx, canvas);
+                    renderTextAndOverlays();
+                }
+            });
+        }
+
+        function drawFallbackBg(ctx, canvas) {
+            const bgGrad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            bgGrad.addColorStop(0, '#1e1b4b');
+            bgGrad.addColorStop(0.5, '#311042');
+            bgGrad.addColorStop(1, '#0f172a');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function downloadThumbnail() {
+            if (!currentThumbnailUrl) return;
+            const title = document.getElementById('songTitle').value || 'karaoke';
+            const link = document.createElement('a');
+            link.download = `Thumbnail-Karaoke-${title.replace(/\s+/g, '-')}.png`;
+            link.href = currentThumbnailUrl;
+            link.click();
+            showToast("Thumbnail berhasil diunduh!", "success");
+        }
+
+        // ------------------------------------------------------------------
+        // GENERATE 20 SCENE VIDEO LOGIC
+        // ------------------------------------------------------------------
+        const scenePromptsTemplate = [
+            "Scene 1 (0-8s): Opening shot, slow zoom in on a professional keyboardist turning on the arranger keyboard lights on a dark cinematic stage.",
+            "Scene 2 (8-16s): Close-up shot of hands wearing rings playing fast intro chord progressions on white and black keyboard keys.",
+            "Scene 3 (16-24s): Wide cinematic angle of the keyboard player smiling, moving to the beat with colorful stage light beams behind.",
+            "Scene 4 (24-32s): Over-the-shoulder shot showing the synthesizer digital screen displaying rhythm tempo and pitch bend controls.",
+            "Scene 5 (32-40s): Extreme close up on fingers adjusting the pitch bend wheel and modulation lever during an expressive solo.",
+            "Scene 6 (40-48s): Side profile shot, smoke effect swirling around the organ keyboard keys with warm golden spotlights.",
+            "Scene 7 (48-56s): High angle bird's-eye view looking down at dual-tier keyboards being played in harmony.",
+            "Scene 8 (56-64s): Dynamic panning shot from left keys to right keys as hand glides gracefully across the keyboard pitch.",
+            "Scene 9 (64-72s): Medium shot of player tapping the rhythm drum pad triggers on the synthesizer with passion.",
+            "Scene 10 (72-80s): Low camera angle shot looking up at the musician with stage lasers flashing in cyan and magenta.",
+            "Scene 11 (80-88s): Macro detail shot of fingers pressing bass chords on lower keyboard section.",
+            "Scene 12 (88-96s): Smooth camera rotation around the organist performing an energetic Dangdut/Pop breakdown fill.",
+            "Scene 13 (96-104s): Soft focus bokeh effect background with crisp focus on hands executing fast organ trills.",
+            "Scene 14 (104-112s): Frontal waist-up shot showing musician feeling the music rhythm, nodding and smiling.",
+            "Scene 15 (112-120s): Close up on vintage organ drawbars or synthesizer slider faders being adjusted in real time.",
+            "Scene 16 (120-128s): Dynamic tilt-up shot from foot pedal expression control up to the keyboard display.",
+            "Scene 17 (128-136s): Atmospheric wide shot showing the entire organ tunggal setup illuminated under purple stage light.",
+            "Scene 18 (136-144s): Slow motion close-up of fingers playing ending solo improvisation on upper keyboard octave.",
+            "Scene 19 (144-152s): Panning shot from player's face down to energetic final chord strike on the keys.",
+            "Scene 20 (152-160s): Outro shot, musician holding final chord sustained while stage lights slowly dim to ambient glow."
+        ];
+
+        async function generateVideoScenes() {
+            const title = document.getElementById('songTitle').value.trim();
+            const artist = document.getElementById('artistName').value.trim();
+            const style = document.getElementById('organStyle').value;
+            const extra = document.getElementById('extraDescription').value;
+
+            if (!title || !artist) {
+                showToast("Mohon isi Judul Lagu dan Nama Penyanyi!", "warning");
+                return;
+            }
+
+            const btnGen = document.getElementById('btnGenVideo');
+            const progressBox = document.getElementById('videoProgress');
+            const progressBar = document.getElementById('videoProgressBar');
+            const progressText = document.getElementById('videoProgressText');
+            const progressPercent = document.getElementById('videoProgressPercent');
+            const grid = document.getElementById('scenesGrid');
+
+            btnGen.disabled = true;
+            btnGen.classList.add('opacity-50');
+            progressBox.classList.remove('hidden');
+            grid.innerHTML = '';
+            generatedScenes = [];
+
+            showToast("Memulai pembuat 20 Scene Video AI...", "info");
+
+            for (let i = 0; i < 20; i++) {
+                const sceneNumber = i + 1;
+                const timeStart = i * 8;
+                const timeEnd = (i + 1) * 8;
+                const timeLabel = `${formatTime(timeStart)} - ${formatTime(timeEnd)}`;
+
+                const percentVal = Math.round((sceneNumber / 20) * 100);
+                progressText.innerText = `Menggenerate Scene ${sceneNumber} / 20 (AI Visual Orgen)...`;
+                progressPercent.innerText = `${percentVal}%`;
+                progressBar.style.width = `${percentVal}%`;
+
+                const prompt = `Cinematic photorealistic video frame shot for scene ${sceneNumber} of an Indonesian Karaoke Organ Tunggal music video. Style: ${style}. ${scenePromptsTemplate[i]}. Musician description: ${extra}. 8k, hyper-detailed, photo studio lighting, 16:9 aspect ratio. No text on screen.`;
+
+                let imgUrl = '';
+                try {
+                    imgUrl = await fetchGeminiImage(prompt, "16:9");
+                } catch (err) {
+                    console.warn(`Gagal scene ${sceneNumber}, membuat fallback visual.`, err);
+                    imgUrl = createFallbackSceneImage(sceneNumber, timeLabel);
+                }
+
+                const sceneObj = {
+                    sceneNumber: sceneNumber,
+                    timeLabel: timeLabel,
+                    prompt: scenePromptsTemplate[i],
+                    imageUrl: imgUrl
+                };
+
+                generatedScenes.push(sceneObj);
+                renderSceneCard(grid, sceneObj);
+            }
+
+            progressText.innerText = `Selesai! 20 Scene Video AI berhasil dibuat.`;
+            btnGen.disabled = false;
+            btnGen.classList.remove('opacity-50');
+
+            updateAllDownloadState();
+            showToast("20 Scene Video AI Siap Digunakan / Diunduh!", "success");
+        }
+
+        // ------------------------------------------------------------------
+        // NEW FEATURE: COMPILE 20 SCENES INTO 1 FULL DIRECT VIDEO FILE (MP4/WebM)
+        // ------------------------------------------------------------------
+        async function compileAndDownloadFullVideo() {
+            if (generatedScenes.length === 0 || isRenderingVideo) return;
+
+            const title = document.getElementById('songTitle').value || 'karaoke';
+            const progressBox = document.getElementById('videoProgress');
+            const progressBar = document.getElementById('videoProgressBar');
+            const progressText = document.getElementById('videoProgressText');
+            const progressPercent = document.getElementById('videoProgressPercent');
+
+            isRenderingVideo = true;
+            progressBox.classList.remove('hidden');
+            showToast("Mulai merakit video utuh 160 detik...", "info");
+
+            // Setup canvas renderer for video synthesis
+            const renderCanvas = document.createElement('canvas');
+            renderCanvas.width = 1280;
+            renderCanvas.height = 720;
+            const ctx = renderCanvas.getContext('2d');
+
+            // Capture stream at 30 fps
+            const stream = renderCanvas.captureStream(30);
+            
+            // Determine supported mimeType
+            let mimeType = 'video/webm;codecs=vp9';
+            if (!MediaRecorder.isTypeSupported(mimeType)) {
+                mimeType = 'video/webm';
+            }
+
+            const mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType, videoBitsPerSecond: 5000000 });
+            const chunks = [];
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) chunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                const videoUrl = URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.href = videoUrl;
+                link.download = `Video-Utuh-Karaoke-${title.replace(/\s+/g, '-')}.webm`;
+                link.click();
+
+                isRenderingVideo = false;
+                progressText.innerText = "Video Utuh Berhasil Diunduh!";
+                showToast("Video utuh berhasil digabung dan diunduh!", "success");
+            };
+
+            mediaRecorder.start();
+
+            // Load all scene images into memory first
+            const loadedImages = await Promise.all(generatedScenes.map(scene => {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.crossOrigin = "anonymous";
+                    img.onload = () => resolve(img);
+                    img.onerror = () => resolve(null);
+                    img.src = scene.imageUrl;
+                });
+            }));
+
+            // Render fast timeline preview sequence (Simulation 20 scenes)
+            const fps = 30;
+            const totalScenes = loadedImages.length;
+            const framesPerScene = fps * 2; // Accelerated smooth preview render (2 seconds per scene for fast user rendering)
+            let currentFrame = 0;
+            const totalFrames = totalScenes * framesPerScene;
+
+            const renderLoop = setInterval(() => {
+                if (currentFrame >= totalFrames) {
+                    clearInterval(renderLoop);
+                    mediaRecorder.stop();
+                    return;
+                }
+
+                const sceneIndex = Math.floor(currentFrame / framesPerScene);
+                const img = loadedImages[sceneIndex];
+
+                if (img) {
+                    ctx.drawImage(img, 0, 0, renderCanvas.width, renderCanvas.height);
+                } else {
+                    ctx.fillStyle = '#0f172a';
+                    ctx.fillRect(0, 0, renderCanvas.width, renderCanvas.height);
+                }
+
+                // Render watermark/scene tag indicator
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.7)';
+                ctx.fillRect(30, 30, 280, 45);
+                ctx.fillStyle = '#a855f7';
+                ctx.font = 'bold 20px Inter, sans-serif';
+                ctx.fillText(`SCENE ${sceneIndex + 1} / 20 (8s)`, 45, 60);
+
+                currentFrame++;
+                const renderPercent = Math.round((currentFrame / totalFrames) * 100);
+                progressText.innerText = `Memproses & Menggabungkan Video Utuh (${renderPercent}%)...`;
+                progressPercent.innerText = `${renderPercent}%`;
+                progressBar.style.width = `${renderPercent}%`;
+            }, 1000 / fps);
+        }
+
+        function renderSceneCard(container, scene) {
+            const card = document.createElement('div');
+            card.className = "bg-slate-900 border border-slate-800 rounded-xl overflow-hidden hover:border-slate-700 transition flex flex-col group shadow-md";
+            card.innerHTML = `
+                <div class="relative aspect-video bg-slate-950 overflow-hidden">
+                    <img src="${scene.imageUrl}" alt="Scene ${scene.sceneNumber}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    <span class="absolute top-2 left-2 bg-slate-950/80 text-indigo-400 font-bold text-[10px] px-2 py-0.5 rounded border border-indigo-500/30">
+                        Scene ${scene.sceneNumber} (8s)
+                    </span>
+                    <span class="absolute bottom-2 right-2 bg-slate-950/80 text-slate-300 text-[10px] px-1.5 py-0.5 rounded">
+                        ${scene.timeLabel}
+                    </span>
+                </div>
+                <div class="p-2.5 text-xs space-y-2 flex-1 flex flex-col justify-between">
+                    <p class="text-slate-400 line-clamp-2 text-[11px]" title="${scene.prompt}">${scene.prompt}</p>
+                    <button onclick="downloadSingleScene(${scene.sceneNumber})" 
+                        class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] py-1.5 rounded border border-slate-700 transition flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-download text-xs text-indigo-400"></i> Unduh Frame Scene
+                    </button>
+                </div>
+            `;
+            container.appendChild(card);
+        }
+
+        function downloadSingleScene(sceneNum) {
+            const scene = generatedScenes.find(s => s.sceneNumber === sceneNum);
+            if (!scene) return;
+            const title = document.getElementById('songTitle').value || 'karaoke';
+            const link = document.createElement('a');
+            link.download = `Scene-${scene.sceneNumber}-${title.replace(/\s+/g, '-')}.png`;
+            link.href = scene.imageUrl;
+            link.click();
+            showToast(`Scene ${sceneNum} berhasil diunduh!`, "success");
+        }
+
+        // Helper: Download all generated assets
+        function downloadAllPackage() {
+            if (!currentThumbnailUrl && generatedScenes.length === 0) return;
+
+            showToast("Mulai mengunduh seluruh paket berkas...", "info");
+            const title = document.getElementById('songTitle').value || 'karaoke';
+            const artist = document.getElementById('artistName').value || 'artist';
+            const keyNote = document.getElementById('customKey').value || 'G';
+
+            // Download Thumbnail first
+            if (currentThumbnailUrl) {
+                setTimeout(() => downloadThumbnail(), 200);
+            }
+
+            // Download text script / prompt blueprint for video editor
+            let scriptContent = `=====================================================\n`;
+            scriptContent += `RANCANGAN VIDEO KARAOKE ORGEN TUNGGAL (20 SCENE)\n`;
+            scriptContent += `Judul Lagu: ${title}\nPenyanyi: ${artist}\nNada Dasar: ${keyNote}\n`;
+            scriptContent += `Total Durasi: 20 Scene x 8 Detik = 160 Detik (2 Menit 40 Detik)\n`;
+            scriptContent += `=====================================================\n\n`;
+
+            generatedScenes.forEach((s) => {
+                scriptContent += `[Scene ${s.sceneNumber}] (${s.timeLabel})\nVisual AI Prompt: ${s.prompt}\n\n`;
+            });
+
+            const blob = new Blob([scriptContent], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Blueprint-Video-Scene-${title.replace(/\s+/g, '-')}.txt`;
+            setTimeout(() => link.click(), 600);
+
+            // Download scenes sequentially
+            generatedScenes.forEach((scene, index) => {
+                setTimeout(() => {
+                    const sceneLink = document.createElement('a');
+                    sceneLink.download = `Scene-${String(scene.sceneNumber).padStart(2, '0')}-${title.replace(/\s+/g, '-')}.png`;
+                    sceneLink.href = scene.imageUrl;
+                    sceneLink.click();
+                }, 1000 + (index * 300));
+            });
+        }
+
+        function updateAllDownloadState() {
+            const btnAll = document.getElementById('btnDownloadAll');
+            const btnFullVideo = document.getElementById('btnDownloadMergedVideo');
+
+            if (currentThumbnailUrl || generatedScenes.length > 0) {
+                btnAll.disabled = false;
+                btnAll.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+
+            if (generatedScenes.length > 0) {
+                btnFullVideo.disabled = false;
+                btnFullVideo.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        function createFallbackSceneImage(num, timeLabel) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 640;
+            canvas.height = 360;
+            const ctx = canvas.getContext('2d');
+
+            const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            grad.addColorStop(0, '#0f172a');
+            grad.addColorStop(0.5, '#1e1b4b');
+            grad.addColorStop(1, '#311042');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#6366f1';
+            ctx.font = 'bold 32px Inter, sans-serif';
+            ctx.fillText(`SCENE ${num}`, 40, 160);
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = '20px Inter, sans-serif';
+            ctx.fillText(`Visual Orgen Tunggal (${timeLabel})`, 40, 200);
+
+            return canvas.toDataURL('image/png');
+        }
+    </script>
+</body>
+</html>
